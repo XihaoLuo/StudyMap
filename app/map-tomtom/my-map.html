@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Study Map</title>
+        <link rel='stylesheet' type='text/css' href='sdk/map.css'/>
+        <script src='sdk/tomtom.min.js'></script>
+    </head>
+    <body>
+        <div id='map' style='height:500px;width:500px'></div>
+        <script>
+	    tomtom.setProductInfo('StudyMap', '<v0.0>');
+            tomtom.L.map('map', {
+		    key: 'CrJUAx0KGLkHEHqh0P4ImLvb1D1sxcq3',
+                    source: 'vector',
+                    basePath: '/sdk'
+	    });
+        </script>
+    </body>
+</html>

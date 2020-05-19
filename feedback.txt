@@ -1,0 +1,64 @@
+--------------------------
+- Overview 91/100
+--------------------------
+
+Overall, this project is terrific. Very nice menus and the new feed/profile
+pages (great job styling).  I like the "post location" dialog. Good work on the
+project development. All the finished features work well and look great.
+Excellent work. You should definitely keep working on this project if you have
+the time. It is off to a stellar start. And I'm very pleased you were able to
+take this as an opportunity to learn about databases, web APIs, Flask, CSS,
+javascript, etc. Also, great job using CSV to init your locations.
+
+As a summer project, I recommend trying to host your work so you can show it
+off to people.  At a minimum, copy the project to your own github and make the
+video and screenshots available for people to see.
+
+Your usage of git was very well done. Good work using different branches and 
+coordinating your efforts. 
+
+Some suggestions for improvements:
+- Needs checkout functionality (ps - thanks for not making the video 60 min long)
+
+Based on git history, our MVP developer of both the month and year is Grace
+(with nesrly 50% of commits)! Wow. See stats/authors.html for details.  Well
+done on a great project. 
+
+--------------------------
+- Breakdown
+--------------------------
+
+(10 points) Proposal: A
+(10 points) Sprints: A
+(10 points) Studio (In class meetings): A
+(4 points) Record of weekly progress: A 
+(4 points) Final report: A 
+(4 points) Post-mortem: A
+(4 points) Credits: A
+(4 points) Updated design doc:
+
+-4 I couldn't find updated architecture definitions. For example, I would like 
+to see what your database looks like as well as the structure of your webpages 
+and server.
+
+(35/35 points) Source code: 
+
+It is customary to include the git clone command in the obtaining the source 
+for convenience to the user (reader can cut and paste it)
+
+Your build instructions are EXCELLENT -- great work including the setup script.
+Well done. Also, very good documenting the dependencies.
+
+Everything ran without a hitch.
+
+(10/15 points) Test code 
+
+Database tests are a good start.
+
+-5 I highly recommend using a testing framework for your webserver as well as your 
+database -- especially if you'd like to keep adding nee features. I find its faster 
+to develop your webserver too, because you don't need to keep restarting the 
+server and refreshing your browser. The class examples have a Flask test example. The 
+following article is decent for getting started as well using general frameworks. 
+
+https://damyanon.net/post/flask-series-testing/

@@ -1,0 +1,21 @@
+<div class="row">
+    <div class="col-md-6">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    {{ (users[post.user_id - 1]).username }}
+                    <span class="pull-right"> {{ moment(post.timestamp).fromNow() }}</span>
+                </h3>
+            </div>
+            {% if post.body %}
+                <div class="panel-body">
+                    "{{ post.body }}"
+                </div>
+            {% endif %}
+            <div class="panel-footer clearfix"> 
+                In {{post.building}}: {{spaces[post.studySpace_id-1].name}}<br> 
+                {{ moment(post.timestamp).format('LLL') }} <br>
+            </div>
+        </div>
+    </div>
+</div>

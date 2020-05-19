@@ -1,0 +1,52 @@
+{% extends 'bootstrap/base.html' %}
+
+{% block scripts %}
+    {{ super() }}
+    {{ moment.include_moment() }}
+{% endblock %}
+
+{% block title %}
+    {% if title %}{{ title }} - StudyMap{% else %} StudyMap{% endif %}
+{% endblock %}
+
+{% block navbar %}
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        <ul class= "nav navbar-nav">
+            <a class= "navbar-brand" href="{{ url_for('map') }}">Home</a>
+            <a class= "navbar-brand" href="{{ url_for('feed') }}">Feed</a>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+            {% if current_user.is_anonymous %}
+            <a class= "navbar-brand" href="{{ url_for('login') }}">Login</a>
+            {% else %}
+            <span class= "navbar-brand">Hi {{ current_user.username }}!</span>
+            <a class= "navbar-brand" href="{{ url_for('profile', name=current_user.username) }}">Profile</a>
+            <a class= "navbar-brand" href="{{ url_for('logout') }}">Logout</a>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+    <div class = "container">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-info" role="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        {% block app_content %} {% endblock %}
+    </div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+    <h1>{{ user.username }}</h1>
+    <p>Last seen in: {{last_seen}}</p>
+    {% if last_session != None %}
+      <p>Last study session: {{moment(last_session).format('LLL')}}</p>
+    {% endif %}
+    <p>Number of posts: {{num_posts}}</p>
+    <hr>
+    <h3>Recent posts:</h3>
+    <ul>
+      {% for post in posts %}
+        {% include '_post.html' %}
+      {% endfor %}
+    </ul>
+{% endblock %}

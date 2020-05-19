@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+<html>
+    <head>
+        <title>Study Map</title>
+        <script src='https://code.jquery.com/jquery-1.12.4.js'></script>
+        <script src='https://code.jquery.com/ui/1.12.1/jquery-ui.js'></script>
+
+        <link rel='stylesheet' type='text/css' href="{{ url_for('static', filename = 'sdk/map.css') }}"/>
+        <link rel='stylesheet' href='http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css'/>
+
+        <script type='text/javascript' src="{{ url_for('static', filename = 'sdk/tomtom.min.js') }}"></script>
+        <script type='text/javascript' src="{{ url_for('static', filename = 'study_spaces.js') }}"></script>
+
+        <link rel='stylesheet' type='text/css' href="{{ url_for('static', filename = 'styles.css') }}"
+    </head>
+    <body>
+        <div class='control-panel'>
+            <div class='heading'>
+              <img src="{{ url_for('static', filename = 'logo3.png') }}">
+            </div>
+            <div id='space-list'></div>
+        </div>
+
+        <div id="labels-container">
+        <label>Post location</label>
+        <p> Select location then submit to check in </p>
+        <div id="route-labels"></div>
+        <textarea id="status-text" name="status" cols="25" rows="2" placeholder="enter status"></textarea>
+        <input type="button" id="submit-button" value="Submit">
+        </div>
+
+        <div id='map' class='map'></div>
+
+        <script>
+            /* loads map display */
+            var map = tomtom.L.map('map', {
+  	                key: 'CrJUAx0KGLkHEHqh0P4ImLvb1D1sxcq3',
+                    basePath: "{{ url_for('static', filename = 'sdk') }}",
+                    center: [39.905484, -75.354162],
+                    zoom: 16
+            });
+
+            /* list for storing rooms under buildings */
+            var list = document.getElementById('space-list');
+            var featureGroups = [];
+
+            /* accesses json to create markers */
+            var spaces = JSON.parse('{{spaces | safe}}');
+            spaces.Spaces.forEach(function (space) {
+                var id = space.id;
+                var room = space.room;
+                var location = space.coordinates;
+                var building = space.building;
+                var num_occupants = space.num_occupants;
+                var buildingSpacesList = document.getElementById(building);
+
+                /* set marker and display popup*/
+                var marker = tomtom.L.marker(location, {
+                    icon: tomtom.L.icon({
+                        iconUrl: "{{ url_for('static', filename = 'pin.png') }}",
+                        iconSize: [18, 28],
+                        iconAnchor: [2, 2],
+                        popupAnchor: [7, 8]
+                    })
+                  });
+                marker.bindPopup('<b>' + building + '</b>' + '</br>' + room +
+                  '</br></br><i>' + num_occupants + ' checked in recently</i>');
+
+                /* if building does not exist, create a header for building,
+                add the space under existing building */
+                if (buildingSpacesList === null) {
+                    var buildingSpacesListHeading = list.appendChild(document.createElement('h3'));
+                    buildingSpacesListHeading.innerHTML = building;
+                    buildingSpacesList = list.appendChild(document.createElement('div'));
+                    buildingSpacesList.id = building;
+                    buildingSpacesList.className = 'list-entries-container';
+                    featureGroups[building] = new L.featureGroup([marker]);
+                    buildingSpacesListHeading.addEventListener('click', function (e) {
+                        map.fitBounds(featureGroups[building].getBounds());
+                    });
+                } else {
+                    featureGroups[building].addLayer(marker);
+                }
+
+                marker.addTo(map)
+
+                var details = buildLocation(buildingSpacesList, room);
+
+                /* creates child element and fills in html details*/
+                function buildLocation(htmlParent, room) {
+                    var details = htmlParent.appendChild(document.createElement('a'));
+                    details.href = '#';
+                    details.title = id;
+                    details.className = 'list-entry';
+                    details.innerHTML = room;
+                    return details;
+                };
+
+                /* event listener for showing element in list when clicking marker */
+                marker.addEventListener('click',
+                   (function (details, building) {
+                       var activeItem = document.getElementsByClassName('selected');
+                       return function () {
+                           if (activeItem[0]) {
+                               activeItem[0].classList.remove('selected');
+                           }
+                           details.classList.add('selected');
+                           openBuildingTab(building);
+                       }
+                   })(details, building)
+                );
+
+                /* event listener for showing element on map when clicking list */
+                 details.addEventListener('click',
+                      (function (marker) {
+                          var activeItem = document.getElementsByClassName('selected');
+                          return function () {
+                              if (activeItem[0]) {
+                                  activeItem[0].classList.remove('selected');
+                              }
+                              details.classList.add('selected');
+                              map.setView(marker.getLatLng(), 20);
+                              marker.openPopup();
+                          }
+                      })(marker)
+                  );
+            });
+
+            /* unselect marker if clicked away */
+            map.addEventListener('click',
+               (function () {
+                   var activeItem = document.getElementsByClassName('selected');
+                   if (activeItem[0]) {
+                       activeItem[0].classList.remove('selected');
+                   }
+               })
+            );
+
+            /* display checkin button*/
+            tomtom.controlPanel({
+                position: 'bottomright',
+                collapsed: false,
+                close: null,
+                closeOnMapClick: false
+            }).addTo(map).addContent(document.getElementById('labels-container'));
+
+            /* event listener for checkin submit button*/
+            document.getElementById('submit-button').addEventListener('click', checkIn);
+            function checkIn() {
+                var activeItem = document.getElementsByClassName('selected');
+                if(activeItem[0]){
+                  var status = document.getElementById('status-text').value;
+                  window.location.href = '/makepost/' + activeItem[0].title + '/' + status;
+                }
+                else {
+                  window.alert('please select a location first');
+                }
+            }
+
+          /*jquery accordion for sidebar*/
+          jQuery(function ($) {
+          	$("#space-list").accordion({
+          	   "icons": { "header": "ui-icon-plus", "activeHeader": "ui-icon-minus" },
+          	    "heightStyle": "content",
+          	    "collapsible": true,
+          	    "active": false
+          	 });
+          });
+
+          /* helper function for sidebar event listener: NOT WORKING */
+          function openBuildingTab(selected_id) {
+              var index = $('#space-list').find('div.list-entries-container');
+              for (var j = 0; j < index.length; j++) {
+                  if (index[j].id == selected_id) {
+                      jQuery(function($) { //not working
+                          // $(document).ready(function() {
+                              $("#space-list").accordion("option", "active", j
+                              );
+                          // });
+                      });
+                  }
+              }
+          }
+
+          </script>
+    </body>
+</html>
+{% endblock %}
